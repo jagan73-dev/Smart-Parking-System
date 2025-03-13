@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <string.h>
+#define MAX_PARKING_SPOTS 10
+typedef struct {
+    char regNumber[15];  
+    char vehicleType[10];
+    int entryTime;       
+    int isOccupied;  
+} ParkingSpot;
+
+ParkingSpot parkingLot[MAX_PARKING_SPOTS];  
+
+void initializeParkingLot() {
+    for (int i = 0; i < MAX_PARKING_SPOTS; i++) {
+        parkingLot[i].isOccupied = 0; 
+    }
+}
+int findAvailableSpot() {
+    for (int i = 0; i < MAX_PARKING_SPOTS; i++) {
+        if (parkingLot[i].isOccupied == 0) {
+            return i;
+        }
+    }
+    return -1; 
+}
+void vehicleEntry() {
+    int spot = findAvailableSpot();
+    if (spot == -1) {
+        printf("No available parking spots.\n");
+        return;
+    }
+    char regNumber[15], vehicleType[10];
+    printf("Enter Vehicle Registration Number: ");
+    scanf("%s", regNumber);
+    printf("Enter Vehicle Type (Car/Bike): ");
+    scanf("%s", vehicleType);
+    strcpy(parkingLot[spot].regNumber, regNumber);
+    strcpy(parkingLot[spot].vehicleType, vehicleType);
+    parkingLot[spot].isOccupied = 1;
+    printf("Vehicle entered. Parking spot %d assigned.\n", spot + 1);
+}
+void vehicleExit() {
+    char regNumber[15];
+    printf("Enter Vehicle Registration Number for exit: ");
+    scanf("%s", regNumber);
+    for (int i = 0; i < MAX_PARKING_SPOTS; i++) {
+        if (parkingLot[i].isOccupied == 1 && strcmp(parkingLot[i].regNumber, regNumber) == 0) {
+            parkingLot[i].isOccupied = 0; // Free up the spot
+            printf("Vehicle with registration number %s has exited. Spot %d is now available.\n", regNumber, i + 1);
+            return;
+        }
+    }
+    printf("No vehicle found with the given registration number.\n");
+}
+void displayParkingStatus() {
+    printf("\nCurrent Parking Status:\n");
+    printf("Spot No | Reg. Number | Vehicle Type\n");
+    for (int i = 0; i < MAX_PARKING_SPOTS; i++) {
+        if (parkingLot[i].isOccupied) {
+            printf("%d       | %s        | %s\n", i + 1, parkingLot[i].regNumber, parkingLot[i].vehicleType);
+        } else {
+            printf("%d       | Empty      | N/A\n", i + 1);
+        }
+    }
+}
+void checkAvailability() {
+    int available = 0;
+    for (int i = 0; i < MAX_PARKING_SPOTS; i++) {
+        if (parkingLot[i].isOccupied == 0) {
+            available = 1;
+            break;
+        }
+    }
+    if (available) {
+        printf("There are available parking spots.\n");
+    } else {
+        printf("No parking spots available.\n");
+    }
+}
+int main() {
+    int choice;
+    initializeParkingLot();
+
+    while (1) {
+        printf("\nSmartParking System\n");
+        printf("1. Vehicle Entry\n");
+        printf("2. Vehicle Exit\n");
+        printf("3. Display Parking Status\n");
+        printf("4. Check Parking Availability\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                vehicleEntry();
+                break;
+            case 2:
+                vehicleExit();
+                break;
+            case 3:
+                displayParkingStatus();
+                break;
+            case 4:
+                checkAvailability();
+                break;
+            case 5:
+                printf("Exiting the system...\n");
+                return 0;
+            default:
+                printf("Invalid choice! Please tryagain.\n");
+        }
+    }
+    return 0;
+}
